@@ -19,7 +19,7 @@ async def on_ready():
         for server in client.guilds:
             if server.name == my_discord_channel_name: # Add desired channels here               
                 for category in server.categories:
-                    if category.name == "Dry Tree":
+                    if category.name == nw_server_name:
                         await category.move(beginning=True)
                         category_list.append(category)
                         for channel in category.channels:
@@ -31,10 +31,10 @@ async def on_ready():
                                 await channel.set_permissions(role, connect=False) 
                 if len(category_list) == 0:
                     try:
-                        print("Adding \"Dry Tree\" category to: " + server.name)
+                        # print("Adding \""+ nw_server_name + "\" category to: " + server.name) # DEBUG
                         await server.create_category("Dry Tree")
                     except:
-                        print("Failed to add \"Dry Tree\" category to: " + server.name)
+                        # print("Failed to add \"" + nw_server_name + "\" category to: " + server.name) # DEBUG
                         continue
         await asyncio.sleep(30)
 
