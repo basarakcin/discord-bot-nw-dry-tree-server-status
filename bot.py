@@ -9,33 +9,38 @@ my_discord_channel_name = "<Insert Your Discord Channel Name Here>"
 
 @client.event
 async def on_ready(): 
+    print("Starting bot...")
     while True:
-        category_list = []
         server_status = getServerStatus(serverName)
-        availability = server_status.get("availability")
-        availability += " " + status_emoji[availability]
-        online_players = server_status.get("online-players")
-        
+
         for server in client.guilds:
             if server.name == my_discord_channel_name: # Add desired channels here               
+                is_available = False            
                 for category in server.categories:
-                    if category.name == nw_server_name:
-                        await category.move(beginning=True)
-                        category_list.append(category)
+                    if category.name == nw_server_name:                        
+                        is_available = True
                         for channel in category.channels:
                             await channel.delete()
-                        await category.create_voice_channel("Status: " + availability)
-                        await category.create_voice_channel(online_players + " / 2,000")
-                        for channel in category.channels:
-                            for role in server.roles:
-                                await channel.set_permissions(role, connect=False) 
-                if len(category_list) == 0:
+                        await create_vc(category, server_status)
+                    else:
+                        continue
+                if is_available:
+                    continue
+                else:
                     try:
+                        category = await server.create_category("Dry Tree")
                         # print("Adding \""+ nw_server_name + "\" category to: " + server.name) # DEBUG
-                        await server.create_category("Dry Tree")
+                        await category.move(beginning=True)
+                        for role in server.roles:
+                            await category.set_permissions(role, connect=False) 
+                        await create_vc(category, server_status)
                     except:
-                        # print("Failed to add \"" + nw_server_name + "\" category to: " + server.name) # DEBUG
+                         # print("Failed to add \"" + nw_server_name + "\" category to: " + server.name) # DEBUG
                         continue
         await asyncio.sleep(30)
 
+async def create_vc(category, server_status):
+    await category.create_voice_channel(server_status[0])
+    await category.create_voice_channel(server_status[1])
+    
 client.run(DISCORD_TOKEN)
