@@ -20,8 +20,18 @@ async def on_ready():
                     if category.name == nw_server_name:                        
                         is_available = True
                         for channel in category.channels:
-                            await channel.delete()
-                        await create_vc(category, server_status)
+                            if "2,000" in channel.name:
+                                await asyncio.sleep(5)
+                                print(channel.name)
+                                await channel.edit(name=server_status[1])
+                                print("2,000 done")
+                            elif channel.name == server_status[0]:   
+                                continue
+                            else:                           
+                                await asyncio.sleep(5)
+                                print(channel.name)
+                                await channel.edit(name=server_status[0])       
+                                print("else done")                  
                     else:
                         continue
                 if is_available:
